@@ -2,6 +2,10 @@ import { View, StyleSheet,ScrollView} from 'react-native';
 import Constants from 'expo-constants';
 import Text from './Text';
 import {Link ,} from 'react-router-native';
+import useME from './hooks/useMe';
+import { Button,TouchableHighlight } from 'react-native-web';
+import { useApolloClient } from '@apollo/client';
+import useAuthStorage from './hooks/useAuthStorage';
 const styles = StyleSheet.create({
   container: {
     display:"flex",
@@ -15,9 +19,28 @@ const styles = StyleSheet.create({
     color:"white",
     padding:1,
   },
-});
 
+});
 const AppBar = () => {
+  const {data,loading} = useME();
+  const apolloClient = useApolloClient()
+  const authStorage = useAuthStorage();
+  const me = data
+  ? data.me
+  : null;
+  const loginstate = () => {
+    if(me == null){
+      console.log("user:",me)
+      return <Link to="/login"><Text fontWeight="bold" fontSize="subheading" style={styles.text}>Sign in</Text></Link>
+    }else{
+      return <Link onPress={() => {LogOut()}} ><Text fontWeight="bold" fontSize="subheading" style={styles.text}>Log out </Text></Link>
+    }
+  }
+  const LogOut = () => {
+    console.log("logout")
+    authStorage.removeAccessToken();
+    apolloClient.resetStore();
+  }
   return( 
   <View style={styles.container}>
     <ScrollView contentContainerStyle={{
@@ -29,7 +52,7 @@ const AppBar = () => {
           
         }} horizontal>
     <Link to="/"><Text fontWeight="bold" fontSize="subheading" style={styles.text}>Repositories</Text></Link>
-    <Link to="/login"><Text fontWeight="bold" fontSize="subheading" style={styles.text}>Sign in</Text></Link>
+    {loginstate()}
     </ScrollView> 
     </View>
   )

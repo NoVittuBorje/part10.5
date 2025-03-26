@@ -2,6 +2,9 @@ import Text from './Text';
 import { useFormik } from 'formik';
 import { View ,TextInput,Pressable, StyleSheet,TouchableHighlight,} from 'react-native';
 import * as yup from 'yup';
+import useSignIn from './hooks/useSignIn'
+import { useState } from 'react';
+import { useNavigate } from "react-router";
 const styles = StyleSheet.create({
   container:{
     display:"flex",
@@ -57,13 +60,15 @@ const validationSchema = yup.object().shape({
   password: yup.string().min(8,"Password has to be longer than 8").required("Password required")
 })
 const SignIn = () => {
-  const [signIn] = useSignIn();
-
+  const [signIn,result] = useSignIn();
+  let navigate = useNavigate();
   const onSubmit = async (values) => {
     const { username, password } = values;
     try {
       const { data } = await signIn({ username, password });
-      console.log(data);
+      if (data.authenticate.accessToken){
+        navigate("/")
+      }
     } catch (e) {
       console.log(e);
     }
