@@ -3,7 +3,6 @@ import Constants from 'expo-constants';
 import Text from './Text';
 import {Link ,} from 'react-router-native';
 import useME from './hooks/useMe';
-import { Button,TouchableHighlight } from 'react-native-web';
 import { useApolloClient } from '@apollo/client';
 import useAuthStorage from './hooks/useAuthStorage';
 const styles = StyleSheet.create({
@@ -22,7 +21,7 @@ const styles = StyleSheet.create({
 
 });
 const AppBar = () => {
-  const {data,loading} = useME();
+  const {data} = useME();
   const apolloClient = useApolloClient()
   const authStorage = useAuthStorage();
   const me = data
@@ -30,14 +29,12 @@ const AppBar = () => {
   : null;
   const loginstate = () => {
     if(me == null){
-      console.log("user:",me)
       return <Link to="/login"><Text fontWeight="bold" fontSize="subheading" style={styles.text}>Sign in</Text></Link>
     }else{
       return <Link onPress={() => {LogOut()}} ><Text fontWeight="bold" fontSize="subheading" style={styles.text}>Log out </Text></Link>
     }
   }
   const LogOut = () => {
-    console.log("logout")
     authStorage.removeAccessToken();
     apolloClient.resetStore();
   }

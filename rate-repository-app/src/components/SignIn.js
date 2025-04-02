@@ -1,9 +1,8 @@
 import Text from './Text';
 import { useFormik } from 'formik';
-import { View ,TextInput,Pressable, StyleSheet,TouchableHighlight,} from 'react-native';
+import { View ,TextInput, StyleSheet,TouchableHighlight,} from 'react-native';
 import * as yup from 'yup';
 import useSignIn from './hooks/useSignIn'
-import { useState } from 'react';
 import { useNavigate } from "react-router";
 const styles = StyleSheet.create({
   container:{
@@ -73,6 +72,12 @@ const SignIn = () => {
       console.log(e);
     }
   };
+  if (!result.loading){
+  return (<SignInContainer onSubmit={onSubmit}/>)
+  }
+  return <p>loading...</p>
+};
+export const SignInContainer = ({onSubmit}) => {
   const formik = useFormik({
     initialValues:{
       username:"",
@@ -83,16 +88,14 @@ const SignIn = () => {
     },
     validationSchema,
   })
-
   return(
     <View style={styles.container}>
       {formik.touched.username && formik.errors.username && (<Text style={{ color: "#d73a4a" }}>{formik.errors.username}</Text>)}
       <TextInput  style={getStyle(formik.errors.username)} value={formik.values.username} textContentType="username" placeholder='Username' onChangeText={formik.handleChange("username")}/>
       {formik.touched.password && formik.errors.password && (<Text style={{ color: '#d73a4a', }}>{formik.errors.password}</Text>)}
       <TextInput style={getStyle(formik.errors.password)} value={formik.values.password} textContentType="password" secureTextEntry={true} placeholder='Password' onChangeText={formik.handleChange("password")} />
-      <TouchableHighlight style={styles.loginbutton} onPress={formik.handleSubmit} ><Text style={styles.logintext}>Sign in</Text></TouchableHighlight>
+      <TouchableHighlight testID='button' style={styles.loginbutton} onPress={formik.handleSubmit} ><Text style={styles.logintext}>Sign in</Text></TouchableHighlight>
   </View>
 )
-};
-
+} 
 export default SignIn;

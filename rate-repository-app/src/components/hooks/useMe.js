@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react';
 import { useQuery } from '@apollo/client';
 import { GET_ME } from '../graphql/queries'
-import useAuthStorage from '../hooks/useAuthStorage';
+import useAuthStorage from './useAuthStorage';
 
 const useME = () => {
     const getToken = async () => {

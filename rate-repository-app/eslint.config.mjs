@@ -14,7 +14,7 @@ const compat = new FlatCompat({
     allConfig: js.configs.all
 });
 
-export default [...compat.extends("eslint:recommended", "plugin:react/recommended"), {
+export default [...compat.extends("eslint:recommended", "plugin:react/recommended", "plugin:jest/recommended"), {
     plugins: {
         react,
         "react-native": reactNative,
@@ -24,7 +24,6 @@ export default [...compat.extends("eslint:recommended", "plugin:react/recommende
         globals: {
             ...reactNative.environments["react-native"]["react-native"],
         },
-
         parser: babelParser,
     },
 

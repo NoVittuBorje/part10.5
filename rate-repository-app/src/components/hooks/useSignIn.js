@@ -1,8 +1,8 @@
 import { useMutation } from '@apollo/client';
 import { LOGIN } from '../graphql/mutations';
-import useAuthStorage from '../hooks/useAuthStorage';
+import useAuthStorage from './useAuthStorage';
 import { useApolloClient } from '@apollo/client';
-import useME from './useMe';
+
 const useSignIn = () => {
     const [mutate, result] = useMutation(LOGIN);
     const authStorage = useAuthStorage();
