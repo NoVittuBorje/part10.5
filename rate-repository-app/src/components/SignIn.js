@@ -75,7 +75,7 @@ const SignIn = () => {
   if (!result.loading){
   return (<SignInContainer onSubmit={onSubmit}/>)
   }
-  return <p>loading...</p>
+  return <Text>loading...</Text>
 };
 export const SignInContainer = ({onSubmit}) => {
   const formik = useFormik({

@@ -80,15 +80,14 @@ const RepositoryInfo = ({repository}) => {
     )
 }
 const ReviewItem = ({review}) => {
-    console.log(review)
-    const date = new Date(review.createdAt)
+    const date = new Date(review.createdAt).toLocaleDateString('en-GB').replace("/",".")
     return (
         <View style={styles.reviewcontainer}>
             <View style={styles.reviewHeadRow}>
                 <Text style={styles.reviewRating} fontWeight="bold" fontSize="subheading" >{review.rating}</Text>
             <View style={styles.reviewHeadcolumn}>
                 <Text fontWeight="bold" fontSize="subheading">{review.user.username}</Text>
-                <Text color="textSecondary" >{date.toLocaleDateString('en-GB')}</Text>
+                <Text color="textSecondary" >{date}</Text>
                 <Text>{review.text}</Text>
             </View>
             </View>
@@ -100,7 +99,6 @@ const SingleRepo = () => {
     const id = useParams()
     const { repo,loading } = useRepo(id.repoId);
     if (!loading){
-        console.log(repo.repository)
         const reviewNodes = repo.repository.reviews
     ? repo.repository.reviews.edges.map((edge) => edge.node)
     : [];

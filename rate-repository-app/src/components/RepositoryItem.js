@@ -1,11 +1,11 @@
-import { View ,Image,StyleSheet,TouchableHighlight} from "react-native"
+import { View ,Image,StyleSheet} from "react-native"
 import Text from "./Text"
 
 const styles = StyleSheet.create({
     container:{
         display: 'flex',
         backgroundColor: 'white',
-        
+        overflow:"visible",
     },
     tinyLogo: {
         width: 50,
@@ -68,7 +68,6 @@ const RepositoryItem = ({item}) => {
         numbers.ratings = formatNumber(numbers.ratings)
         numbers.reviews = formatNumber(numbers.reviews)
     }
-
     return (
     
     <View style={styles.container} testID="repositoryItem">

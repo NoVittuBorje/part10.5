@@ -27,11 +27,19 @@ const AppBar = () => {
   const me = data
   ? data.me
   : null;
-  const loginstate = () => {
+  const Loginstate = () => {
     if(me == null){
       return <Link to="/login"><Text fontWeight="bold" fontSize="subheading" style={styles.text}>Sign in</Text></Link>
     }else{
-      return <Link onPress={() => {LogOut()}} ><Text fontWeight="bold" fontSize="subheading" style={styles.text}>Log out </Text></Link>
+      return <Link onPress={() => {LogOut()}} ><Text fontWeight="bold" fontSize="subheading" style={styles.text}>Log out</Text></Link>
+    }
+  }
+  const Review = () => {
+    if (me == null){
+      return <Link to="/signup"><Text fontWeight="bold" fontSize="subheading" style={styles.text}>Sign up</Text></Link>
+    }
+    else{
+      return <Link to="/review"><Text fontWeight="bold" fontSize="subheading" style={styles.text}>Create review</Text></Link>
     }
   }
   const LogOut = () => {
@@ -49,7 +57,8 @@ const AppBar = () => {
           
         }} horizontal>
     <Link to="/"><Text fontWeight="bold" fontSize="subheading" style={styles.text}>Repositories</Text></Link>
-    {loginstate()}
+    {Review()}
+    {Loginstate()}
     </ScrollView> 
     </View>
   )
