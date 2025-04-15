@@ -10,6 +10,10 @@ const styles = StyleSheet.create({
     flexDirection:"column",
     alignItems:"center",
   },
+    separator: {
+    height: 10,
+    backgroundColor:"#00000033",
+  },
   input:{
     width:"90%",
     borderWidth: 2,
@@ -106,7 +110,7 @@ const CreateReviewContainer = ({onSubmit}) => {
         
       {formik.touched.Text && formik.errors.Text && (<Text style={{ color: '#d73a4a', }}>{formik.errors.Text}</Text>)}
       <TextInput multiline={true} style={getStyle(formik.errors.Text)} value={formik.values.Text} placeholder='Review' onChangeText={formik.handleChange("Text")} />
-      <TouchableHighlight testID='button' style={styles.submitbutton} onPress={formik.handleSubmit} ><Text style={styles.submittext}>Create a Text</Text></TouchableHighlight>
+      <TouchableHighlight testID='button' style={styles.submitbutton} onPress={formik.handleSubmit} ><Text style={styles.submittext}>Create a review</Text></TouchableHighlight>
   </View>
   )
 }

@@ -97,7 +97,14 @@ const ReviewItem = ({review}) => {
 const ItemSeparator = () => <View style={styles.separator} />;
 const SingleRepo = () => {
     const id = useParams()
-    const { repo,loading } = useRepo(id.repoId);
+    const variables = {
+        id :id.repoId,
+        first:5,
+    }
+    const { repo,loading,fetchMore } = useRepo(variables);
+    const onEndReach = () => {
+        fetchMore()
+      };
     if (!loading){
         const reviewNodes = repo.repository.reviews
     ? repo.repository.reviews.edges.map((edge) => edge.node)
@@ -107,10 +114,12 @@ const SingleRepo = () => {
         data={reviewNodes}
         renderItem={({ item }) => <ReviewItem review={item} />}
         ItemSeparatorComponent={ItemSeparator}
-        
         keyExtractor={({ id }) => id}
+        onEndReachedThreshold={0.5}
+        onEndReached={() => {
+          onEndReach()
+        }}
         ListHeaderComponent={() => <RepositoryInfo repository={repo.repository} />}
-        
       />
       
     );

@@ -4,8 +4,9 @@ import Text from "./Text"
 const styles = StyleSheet.create({
     container:{
         display: 'flex',
-        backgroundColor: 'white',
         overflow:"visible",
+        zIndex:-1,
+        backgroundColor:"white"
     },
     tinyLogo: {
         width: 50,

@@ -2,9 +2,12 @@ import { FlatList, View, StyleSheet,TouchableHighlight } from 'react-native';
 import RepositoryItem from './RepositoryItem';
 import useRepositories from './hooks/useRepositories';
 import { useNavigate } from "react-router";
-import { useState } from 'react';
+import React, { useState ,useRef} from 'react';
 import Text from './Text';
-import {  Menu, Divider, PaperProvider } from 'react-native-paper';
+
+import {  Searchbar,Divider } from 'react-native-paper';
+import {Picker} from '@react-native-picker/picker';
+import { useDebouncedCallback } from 'use-debounce';
 const styles = StyleSheet.create({
   separator: {
     height: 10,
@@ -14,69 +17,125 @@ const styles = StyleSheet.create({
     fontSize:20,
     alignItems:"center",
     fontWeight:"bold",
-},
+  },
+  searchbar: {
+    height: 30,
+    borderColor: 'grey',
+    borderWidth: 1,
+    backgroundColor: 'white',
+    borderCurve:10,
+    margin: 6,
+    borderRadius:5
+  },
+  searchbarinput:{minHeight:0},
+  headercontainer:{backgroundColor:"#00000033"},
+  listheadercontainer:{zIndex:9,elevation:10},
+
 });
 
 const ItemSeparator = () => <View style={styles.separator} />;
 
-export const RepositoryListContainer = ({setorderBy,setorderDirection,repositories,currentOrder,setCurrentOrder}) => {
-  const [visible, setVisible] = useState(false);
-  const openMenu = () => setVisible(true);
-  const closeMenu = () => setVisible(false);
-  console.log(repositories)
-  let navigate = useNavigate();
-  const repositoryNodes = repositories
-    ? repositories.edges.map((edge) => edge.node)
-    : [];
-  return (
-    <FlatList
-      data={repositoryNodes}
+export class RepositoryListContainer extends React.Component {
+  renderHeader = () => {
+    const props = this.props;
+    return (
+      <View style={styles.headercontainer}>
+      <Searchbar
+        placeholder="Search"
+        onChangeText={(e) => {props.setSearchQuery(e);props.handleSearch(e)}}
+        value={props.searchQuery}
+        style={styles.searchbar}
+        inputStyle={styles.searchbarinput}
+      />
+      <Divider></Divider>
+      <Picker
+        selectedValue={props.currentOrder}
+        onValueChange={(itemvalue,itemindex) => {
+          props.setCurrentOrder(itemvalue)
+          if (itemindex === 0){
+            props.setorderBy("CREATED_AT");props.setorderDirection("DESC")
+          }
+          if(itemindex === 1){
+            props.setorderBy("RATING_AVERAGE");props.setorderDirection("DESC");
+          }
+          if(itemindex === 2){
+            props.setorderBy("RATING_AVERAGE");props.setorderDirection("ASC");
+          }
+          }}>
+          <Picker.Item value="Latest repositories" label="Latest repositories" />
+          <Picker.Item value="Highest ranked repositories" label="Highest ranked repositories" />
+          <Picker.Item value="Lowest ranked repositories" label="Lowest ranked repositories" />
+    </Picker>
+    </View>
+    );
+  };
+  renderItem({item}){
+    const props = this.props
+    return(
+      <View >
+      <TouchableHighlight onPress={()=> props.navigate(`/${item.id}`)}>
+      <RepositoryItem
+        item={item}>
+      </RepositoryItem>
+      </TouchableHighlight>
+      </View>
+    )
+  }
+  render() {
+    const props = this.props
+    return (
+      <FlatList
+      data={props.repositoryNodes}
       ItemSeparatorComponent={ItemSeparator}
-      ListHeaderComponentStyle={{zIndex:20,overflow:"visible",elevation:10}}
-      ListHeaderComponent={
-        <PaperProvider>
-          <View>
-            <Menu
-              visible={visible}
-              style={{width:"100%",alignContent:"center",alignItems:"center"}}
-              onDismiss={closeMenu}
-              anchor={<TouchableHighlight onPress={openMenu} style={{borderStyle:"solid",borderWidth:1,margin:1, padding:20,alignItems:"center"}}><Text style={styles.buttontext}>{currentOrder}</Text></TouchableHighlight>}>
-              
-              <Menu.Item onPress={() => {setorderBy("CREATED_AT");setorderDirection("DESC");setCurrentOrder("Latest repositories")}} title="Latest repositories" />
-              <Divider />
-              <Menu.Item  onPress={() => {setorderBy("RATING_AVERAGE");setorderDirection("DESC");setCurrentOrder("Highest ranked repositories")}} title="Highest ranked repositories" />
-              <Divider />
-              <Menu.Item  onPress={() => {setorderBy("RATING_AVERAGE");setorderDirection("ASC");setCurrentOrder("Lowest ranked repositories")}} title="Lowest ranked repositories" />
-            </Menu>
-          </View>
-        </PaperProvider>}
-      renderItem={({item, index, separators}) => (
-        <TouchableHighlight  onPress={()=> navigate(`/${item.id}`)}>
-        <RepositoryItem
-          item={item}>
-        </RepositoryItem>
-        </TouchableHighlight>
-        )}
+      ListHeaderComponentStyle={styles.listheadercontainer}
+      ListHeaderComponent={this.renderHeader}
+      onEndReachedThreshold={0.5}
+      onEndReached={({ distanceFromEnd }) => {
+        if (distanceFromEnd === 0) return;
+        props.onEndReach()
+      }}
+      renderItem={({item, index, separators}) => {
+        return (this.renderItem({item}))
+      }}
     />
-  );
-};
-  
+    );
+  }
+}
+
+
 const RepositoryList = () => {
   const [orderBy , setorderBy] = useState("CREATED_AT")
   const [orderDirection, setorderDirection] = useState("DESC")
   const [currentOrder ,setCurrentOrder] = useState("Latest Repositories")
-  const direction = {
+  const [searchQuery, setSearchQuery] = useState("")
+  const [searchKeyword, setSearchKeyword] = useState("")
+  let navigate = useNavigate();
+  const onEndReach = () => {
+    fetchMore()
+  };
+  const handleSearch = useDebouncedCallback(
+    // function
+    (value) => {
+      setSearchKeyword(value);
+    },
+    // delay in ms
+    1000
+  );
+  const variables = {
     orderBy: orderBy,
-     orderDirection: orderDirection 
-    }
-  const { repositories,loading } = useRepositories(direction);
-  console.log(repositories)
-  if (!loading){
+    orderDirection: orderDirection,
+    searchKeyword:searchKeyword
+  }
+  const { repositories, fetchMore } = useRepositories({
+    first: 8,
+    variables
+  });
+  const repositoryNodes = repositories
+  ? repositories.edges.map((edge) => edge.node)
+  : [];
   return(
-  <RepositoryListContainer  setorderBy={setorderBy} currentOrder={currentOrder} setorderDirection={setorderDirection} setCurrentOrder={setCurrentOrder} repositories={repositories.repositories}/>
+    <RepositoryListContainer onEndReach={onEndReach} navigate={navigate} handleSearch={handleSearch} setSearchQuery={setSearchQuery} searchQuery={searchQuery} setorderBy={setorderBy} currentOrder={currentOrder} setorderDirection={setorderDirection} setCurrentOrder={setCurrentOrder} repositoryNodes={repositoryNodes}/>
   )
-}
-return <Text>loading</Text>
 }
   
 

@@ -27,27 +27,11 @@ const AppBar = () => {
   const me = data
   ? data.me
   : null;
-  const Loginstate = () => {
-    if(me == null){
-      return <Link to="/login"><Text fontWeight="bold" fontSize="subheading" style={styles.text}>Sign in</Text></Link>
-    }else{
-      return <Link onPress={() => {LogOut()}} ><Text fontWeight="bold" fontSize="subheading" style={styles.text}>Log out</Text></Link>
-    }
-  }
-  const Review = () => {
-    if (me == null){
-      return <Link to="/signup"><Text fontWeight="bold" fontSize="subheading" style={styles.text}>Sign up</Text></Link>
-    }
-    else{
-      return <Link to="/review"><Text fontWeight="bold" fontSize="subheading" style={styles.text}>Create review</Text></Link>
-    }
-  }
-  const LogOut = () => {
-    authStorage.removeAccessToken();
-    apolloClient.resetStore();
-  }
-  return( 
-  <View style={styles.container}>
+
+  const Bar = () => {
+    if (me != null){
+    return (
+    <View style={styles.container}>
     <ScrollView contentContainerStyle={{
           flexGrow: 1,
           flex: 1,
@@ -57,10 +41,36 @@ const AppBar = () => {
           
         }} horizontal>
     <Link to="/"><Text fontWeight="bold" fontSize="subheading" style={styles.text}>Repositories</Text></Link>
-    {Review()}
-    {Loginstate()}
+    <Link to="/review"><Text fontWeight="bold" fontSize="subheading" style={styles.text}>Create review</Text></Link>
+    <Link to="/myreviews"><Text fontWeight="bold" fontSize="subheading" style={styles.text}>My reviews</Text></Link>
+    <Link onPress={() => {LogOut()}} ><Text fontWeight="bold" fontSize="subheading" style={styles.text}>Log out</Text></Link>
     </ScrollView> 
     </View>
+    )}else{
+      return(
+        <View style={styles.container}>
+        <ScrollView contentContainerStyle={{
+              flexGrow: 1,
+              flex: 1,
+              height: '100%',
+              width: '100%',
+              justifyContent: "space-evenly",
+              
+            }} horizontal>
+        <Link to="/"><Text fontWeight="bold" fontSize="subheading" style={styles.text}>Repositories</Text></Link>
+        <Link to="/signup"><Text fontWeight="bold" fontSize="subheading" style={styles.text}>Sign up</Text></Link>
+        <Link to="/login"><Text fontWeight="bold" fontSize="subheading" style={styles.text}>Sign in</Text></Link>
+        </ScrollView> 
+        </View>
+      )
+    }
+  }
+  const LogOut = () => {
+    authStorage.removeAccessToken();
+    apolloClient.resetStore();
+  }
+  return( 
+    <Bar/>
   )
 };
 

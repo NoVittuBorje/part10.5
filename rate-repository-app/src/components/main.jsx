@@ -6,7 +6,7 @@ import SignIn from './SignIn';
 import SingleRepo from './SingleRepo';
 import CreateReview from './CreateReview';
 import SignUp from './SignUp';
-
+import MyReviews from './MyReviews';
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
@@ -25,6 +25,7 @@ const Main = () => {
         <Route path="/:repoId" element={<SingleRepo />} />
         <Route path='/review' element={<CreateReview/>} />
         <Route path='/signup' element={<SignUp />}/>
+        <Route path='/myreviews' element={<MyReviews />} />
       </Routes>
       
     </View>
